@@ -72,6 +72,12 @@ object StandardClassIds {
     val unsignedTypes = listOf(UByte, UShort, UInt, ULong)
     val unsignedArrayTypeByElementType = unsignedTypes.associate { id -> id to id.shortClassName.primitiveArrayId() }
     val elementTypeByUnsignedArrayType = unsignedArrayTypeByElementType.inverseMap()
+
+    fun Name.primitiveArrayName(): Name? {
+        val baseId = asString().baseId()
+        val arrayId = primitiveArrayTypeByElementType[baseId] ?: unsignedArrayTypeByElementType[baseId]
+        return arrayId?.shortClassName
+    }
 }
 
 private fun <K, V> Map<K, V>.inverseMap() = entries.associate { (k, v) -> v to k }

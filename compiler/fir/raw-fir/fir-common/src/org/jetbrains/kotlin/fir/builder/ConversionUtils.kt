@@ -25,6 +25,7 @@ import org.jetbrains.kotlin.fir.expressions.impl.buildSingleExpressionBlock
 import org.jetbrains.kotlin.fir.references.FirNamedReference
 import org.jetbrains.kotlin.fir.references.builder.*
 import org.jetbrains.kotlin.fir.symbols.StandardClassIds
+import org.jetbrains.kotlin.fir.symbols.StandardClassIds.primitiveArrayName
 import org.jetbrains.kotlin.fir.symbols.constructStarProjectedType
 import org.jetbrains.kotlin.fir.symbols.impl.*
 import org.jetbrains.kotlin.fir.types.ConeStarProjection
@@ -456,7 +457,12 @@ fun FirPropertyBuilder.generateAccessorsByDelegate(
 fun FirTypeRef.convertToArrayType(): FirUserTypeRef = buildUserTypeRef {
     source = this@convertToArrayType.source
     isMarkedNullable = false
-    qualifier += FirQualifierPartImpl(StandardClassIds.Array.shortClassName).apply {
+    val elementType = this@convertToArrayType as? FirUserTypeRef
+    val arrayQualifier =
+        if (elementType != null && elementType.qualifier.size == 1)
+            elementType.qualifier[0].name.primitiveArrayName()?.let { FirQualifierPartImpl(it) }
+        else null
+    qualifier += arrayQualifier ?: FirQualifierPartImpl(StandardClassIds.Array.shortClassName).apply {
         typeArguments += buildTypeProjectionWithVariance {
             source = this@convertToArrayType.source
             typeRef = this@convertToArrayType
