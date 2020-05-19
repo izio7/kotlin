@@ -454,23 +454,6 @@ fun FirPropertyBuilder.generateAccessorsByDelegate(
     }
 }
 
-fun FirTypeRef.convertToArrayType(): FirUserTypeRef = buildUserTypeRef {
-    source = this@convertToArrayType.source
-    isMarkedNullable = false
-    val elementType = this@convertToArrayType as? FirUserTypeRef
-    val arrayQualifier =
-        if (elementType != null && elementType.qualifier.size == 1)
-            elementType.qualifier[0].name.primitiveArrayName()?.let { FirQualifierPartImpl(it) }
-        else null
-    qualifier += arrayQualifier ?: FirQualifierPartImpl(StandardClassIds.Array.shortClassName).apply {
-        typeArguments += buildTypeProjectionWithVariance {
-            source = this@convertToArrayType.source
-            typeRef = this@convertToArrayType
-            variance = Variance.OUT_VARIANCE
-        }
-    }
-}
-
 private val GET_VALUE = Name.identifier("getValue")
 private val SET_VALUE = Name.identifier("setValue")
 private val PROVIDE_DELEGATE = Name.identifier("provideDelegate")

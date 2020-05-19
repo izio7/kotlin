@@ -54,6 +54,9 @@ class FirSyntheticProperty(
     override val isLocal: Boolean
         get() = false
 
+    override val isFromVararg: Boolean
+        get() = false
+
     override val receiverTypeRef: FirTypeRef?
         get() = null
 

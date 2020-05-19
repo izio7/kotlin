@@ -45,6 +45,7 @@ abstract class FirProperty : FirVariable<FirProperty>(), FirTypeParametersOwner,
     abstract override val symbol: FirPropertySymbol
     abstract val backingFieldSymbol: FirBackingFieldSymbol
     abstract val isLocal: Boolean
+    abstract val isFromVararg: Boolean
     abstract override val typeParameters: List<FirTypeParameter>
     abstract override val status: FirDeclarationStatus
 

@@ -6,7 +6,6 @@
 package org.jetbrains.kotlin.fir.lightTree.fir
 
 import org.jetbrains.kotlin.fir.FirSession
-import org.jetbrains.kotlin.fir.builder.convertToArrayType
 import org.jetbrains.kotlin.fir.declarations.FirDeclarationOrigin
 import org.jetbrains.kotlin.fir.declarations.FirProperty
 import org.jetbrains.kotlin.fir.declarations.FirValueParameter
@@ -38,9 +37,6 @@ class ValueParameter(
     fun toFirProperty(session: FirSession, callableId: CallableId): FirProperty {
         val name = this.firValueParameter.name
         var type = this.firValueParameter.returnTypeRef
-        if (this.firValueParameter.isVararg) {
-            type = type.convertToArrayType()
-        }
         if (type is FirImplicitTypeRef) {
             type = buildErrorTypeRef { diagnostic = ConeSimpleDiagnostic("Incomplete code", DiagnosticKind.Syntax) }
         }
@@ -60,6 +56,7 @@ class ValueParameter(
             isVar = this@ValueParameter.isVar
             symbol = FirPropertySymbol(callableId)
             isLocal = false
+            isFromVararg = firValueParameter.isVararg
             status = FirDeclarationStatusImpl(modifiers.getVisibility(), modifiers.getModality()).apply {
                 isExpect = modifiers.hasExpect()
                 isActual = modifiers.hasActual()

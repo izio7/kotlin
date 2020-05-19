@@ -349,9 +349,6 @@ class RawFirBuilder(
         private fun KtParameter.toFirProperty(firParameter: FirValueParameter): FirProperty {
             require(hasValOrVar())
             var type = typeReference.toFirOrErrorType()
-            if (firParameter.isVararg) {
-                type = type.convertToArrayType()
-            }
             val status = FirDeclarationStatusImpl(visibility, modality).apply {
                 isExpect = hasExpectModifier()
                 isActual = hasActualModifier()
@@ -380,6 +377,7 @@ class RawFirBuilder(
                 isVar = isMutable
                 symbol = FirPropertySymbol(callableIdForName(propertyName))
                 isLocal = false
+                isFromVararg = firParameter.isVararg
                 this.status = status
                 getter = FirDefaultPropertyGetter(propertySource, baseSession, FirDeclarationOrigin.Source, type, visibility)
                 setter = if (isMutable) FirDefaultPropertySetter(
