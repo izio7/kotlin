@@ -619,7 +619,7 @@ class RawFirBuilder(
                 ) {
                     return@buildEnumEntry
                 }
-                initializer = withChildClassName(nameAsSafeName) {
+                initializer = withChildClassName(nameAsSafeName, false) {
                     buildAnonymousObject {
                         source = toFirSourceElement()
                         session = baseSession
@@ -661,7 +661,7 @@ class RawFirBuilder(
         }
 
         override fun visitClassOrObject(classOrObject: KtClassOrObject, data: Unit): FirElement {
-            return withChildClassName(classOrObject.nameAsSafeName) {
+            return withChildClassName(classOrObject.nameAsSafeName, classOrObject.isLocal) {
 
                 val classKind = when (classOrObject) {
                     is KtObjectDeclaration -> ClassKind.OBJECT
@@ -758,7 +758,7 @@ class RawFirBuilder(
 
         override fun visitObjectLiteralExpression(expression: KtObjectLiteralExpression, data: Unit): FirElement {
             val objectDeclaration = expression.objectDeclaration
-            return withChildClassName(ANONYMOUS_OBJECT_NAME) {
+            return withChildClassName(ANONYMOUS_OBJECT_NAME, true) {
                 buildAnonymousObject {
                     source = expression.toFirSourceElement()
                     session = baseSession
@@ -794,7 +794,7 @@ class RawFirBuilder(
         }
 
         override fun visitTypeAlias(typeAlias: KtTypeAlias, data: Unit): FirElement {
-            return withChildClassName(typeAlias.nameAsSafeName) {
+            return withChildClassName(typeAlias.nameAsSafeName, context.firFunctionTargets.isNotEmpty()) {
                 buildTypeAlias {
                     source = typeAlias.toFirSourceElement()
                     session = baseSession

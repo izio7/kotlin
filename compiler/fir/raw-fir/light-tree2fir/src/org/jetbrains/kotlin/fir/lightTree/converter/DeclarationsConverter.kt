@@ -370,7 +370,7 @@ class DeclarationsConverter(
         val className = identifier.nameAsSafeName(if (modifiers.isCompanion()) "Companion" else "")
         val isLocal = isClassLocal(classNode) { getParent() }
 
-        return withChildClassName(className) {
+        return withChildClassName(className, isLocal) {
             withCapturedTypeParameters {
                 val status = FirDeclarationStatusImpl(
                     if (isLocal) Visibilities.LOCAL else modifiers.getVisibility(),
@@ -526,7 +526,7 @@ class DeclarationsConverter(
         }
         val delegatedSuperType = delegatedSuperTypeRef ?: buildImplicitTypeRef()
 
-        return withChildClassName(ANONYMOUS_OBJECT_NAME) {
+        return withChildClassName(ANONYMOUS_OBJECT_NAME, true) {
             buildAnonymousObject {
                 source = objectLiteral.toFirSourceElement()
                 origin = FirDeclarationOrigin.Source
@@ -594,7 +594,7 @@ class DeclarationsConverter(
             ) {
                 return@buildEnumEntry
             }
-            initializer = withChildClassName(enumEntryName) {
+            initializer = withChildClassName(enumEntryName, false) {
                 buildAnonymousObject {
                     source = this@buildEnumEntry.source
                     session = baseSession
@@ -837,7 +837,7 @@ class DeclarationsConverter(
         }
 
         val typeAliasName = identifier.nameAsSafeName()
-        return withChildClassName(typeAliasName) {
+        return withChildClassName(typeAliasName, context.firFunctionTargets.isNotEmpty()) {
             return@withChildClassName buildTypeAlias {
                 source = typeAlias.toFirSourceElement()
                 session = baseSession
